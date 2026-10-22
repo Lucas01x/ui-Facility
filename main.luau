@@ -682,6 +682,8 @@ function Elements:Image(opts)
 	opts = opts or {}
 
 	local height = opts.Height or 120
+	local padding = opts.Padding or 6
+
 	local holder = New("Frame", {
 		Size = UDim2.new(1, 0, 0, height),
 		BackgroundColor3 = Theme.Field,
@@ -694,12 +696,16 @@ function Elements:Image(opts)
 	if opts.Border ~= false then Stroke(holder, Theme.Border) end
 
 	local image = New("ImageLabel", {
-		Size = UDim2.fromScale(1, 1),
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.fromScale(0.5, 0.5),
+		Size = UDim2.new(1, -padding * 2, 1, -padding * 2),
 		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
 		Image = opts.Image or "",
-		ScaleType = opts.ScaleType or Enum.ScaleType.Crop,
+		ScaleType = opts.ScaleType or (opts.Fill and Enum.ScaleType.Crop or Enum.ScaleType.Fit),
 		Parent = holder,
 	})
+	Corner(image, opts.ImageCorner or 4)
 
 	local api = { Instance = holder, Image = image }
 
@@ -708,11 +714,8 @@ function Elements:Image(opts)
 		return self
 	end
 
-	-- a user id loads that player's headshot
 	function api:SetUser(userId, thumbType, size)
 		local id = tonumber(userId) or 0
-
-		-- rbxthumb resolves without an API call and works instantly
 		image.Image = string.format("rbxthumb://type=AvatarHeadShot&id=%d&w=150&h=150", id)
 
 		task.spawn(function()
@@ -735,6 +738,7 @@ function Elements:Image(opts)
 	if opts.UserId then api:SetUser(opts.UserId) end
 	return api
 end
+
 
 function Elements:Table(opts)
 	opts = opts or {}
@@ -1698,8 +1702,7 @@ function Elements:Dropdown(opts)
 	rightList.HorizontalAlignment = Enum.HorizontalAlignment.Right
 
 	local badge = New("Frame", {
-		Size = UDim2.fromOffset(0, 16),
-		AutomaticSize = Enum.AutomaticSize.X,
+		Size = UDim2.fromOffset(18, 16),
 		BackgroundColor3 = Theme.Accent,
 		BorderSizePixel = 0,
 		Visible = false,
@@ -1708,11 +1711,10 @@ function Elements:Dropdown(opts)
 		ThemeTag = { BackgroundColor3 = "Accent" },
 	})
 	Corner(badge, 4)
-	Pad(badge, 0, 5, 0, 5)
 	local badgeText = Label(badge, "0", Color3.fromRGB(40, 32, 34), 11, Theme.FontMedium)
-	badgeText.Size = UDim2.new(0, 0, 1, 0)
-	badgeText.AutomaticSize = Enum.AutomaticSize.X
+	badgeText.Size = UDim2.fromScale(1, 1)
 	badgeText.TextXAlignment = Enum.TextXAlignment.Center
+	badgeText.TextYAlignment = Enum.TextYAlignment.Center
 	badgeText.RichText = false
 	New("UISizeConstraint", { MinSize = Vector2.new(16, 16), Parent = badge })
 
@@ -1763,9 +1765,7 @@ function Elements:Dropdown(opts)
 		Parent = listHolder,
 	})
 	List(inner, GAP)
-
-	-- ช่องค้นหา
-	local searchField = New("Frame", {
+		local searchField = New("Frame", {
 		Size = UDim2.new(1, 0, 0, ROW),
 		BackgroundColor3 = Theme.Field,
 		BorderSizePixel = 0,
@@ -1776,11 +1776,15 @@ function Elements:Dropdown(opts)
 		ThemeTag = { BackgroundColor3 = "Field" },
 	})
 	Corner(searchField, 5)
-	local sStroke = Stroke(searchField, Theme.Border)
+
+	local sStroke = Stroke(searchField, Theme.BorderSoft)
+	Library:Tag(sStroke, { Color = "BorderSoft" })
+
 	local searchIcon = AttachIcon(searchField, "search", Theme.TextDim, 14)
 	if searchIcon then
 		searchIcon.AnchorPoint = Vector2.new(0, 0.5)
 		searchIcon.Position = UDim2.new(0, 9, 0.5, 0)
+		searchIcon.BorderSizePixel = 0
 		Library:Tag(searchIcon, { ImageColor3 = "TextDim" })
 	end
 	local searchLeft = searchIcon and 30 or 10
@@ -1788,6 +1792,8 @@ function Elements:Dropdown(opts)
 		Size = UDim2.new(1, -(searchLeft + 8), 1, 0),
 		Position = UDim2.fromOffset(searchLeft, 0),
 		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		Selectable = false,
 		Text = "",
 		PlaceholderText = opts.SearchPlaceholder or "Search...",
 		PlaceholderColor3 = Theme.TextDim,
@@ -1800,11 +1806,14 @@ function Elements:Dropdown(opts)
 		ThemeTag = { PlaceholderColor3 = "TextDim", TextColor3 = "TextBright" },
 	})
 	Track(searchBox.Focused:Connect(function()
-		Tween(sStroke, { Color = Theme.Accent }, EASE_FAST)
-	end))
-	Track(searchBox.FocusLost:Connect(function()
+		Library:Tag(sStroke, { Color = "Border" })
 		Tween(sStroke, { Color = Theme.Border }, EASE_FAST)
 	end))
+	Track(searchBox.FocusLost:Connect(function()
+		Library:Tag(sStroke, { Color = "BorderSoft" })
+		Tween(sStroke, { Color = Theme.BorderSoft }, EASE_FAST)
+	end))
+
 
 	local selectAll = New("TextButton", {
 		Size = UDim2.new(1, 0, 0, ROW),
@@ -1926,6 +1935,7 @@ function Elements:Dropdown(opts)
 		badge.Visible = multi and has
 		clear.Visible = multi and has
 		badgeText.Text = tostring(count)
+		badge.Size = UDim2.fromOffset(math.max(18, #tostring(count) * 7 + 10), 16)
 
 		headIcon.Visible = false
 		if not multi and selected then
