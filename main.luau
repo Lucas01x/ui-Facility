@@ -1993,8 +1993,8 @@ function Elements:Dropdown(opts)
 		token = token + 1
 		local mine = token
 
-		Library:Tag(bStroke, { Color = state and "Accent" or "Border" })
-		Tween(bStroke, { Color = state and Theme.Accent or Theme.Border }, EASE_FAST)
+		-- Library:Tag(bStroke, { Color = state and "Accent" or "Border" })
+		-- Tween(bStroke, { Color = state and Theme.Accent or Theme.Border }, EASE_FAST)
 		Tween(chev, { Rotation = state and 180 or 0 }, EASE_FAST)
 
 		if state then
@@ -2928,9 +2928,13 @@ function Elements:Keybind(opts)
 			Library.Flags[flag] = key or ""
 			Library:MarkDirty(flag)
 		end
+		if opts.MenuKey == true or string.lower(tostring(opts.Text or "")) == "menu key" then
+			Library:SetToggleKey(key)
+		end
 		Library:RefreshHotkeys()
 		Library:SafeCallback(opts.Text or "keybind", opts.OnChanged, key)
 	end
+
 
 	Track(pill.Activated:Connect(function()
 		if api and api.Enabled == false then return end
@@ -6596,13 +6600,17 @@ function Library:SetMobileButtonVisible(state)
 end
 
 Track(UserInputService.InputBegan:Connect(function(input, gpe)
-	if gpe or Library.Binding then return end
-	local hit = (Library.ToggleKey ~= nil and input.KeyCode == Library.ToggleKey)
-		or (Library.ToggleInput ~= nil and input.UserInputType == Library.ToggleInput)
-	if hit then
+	if Library.Binding then return end
+	local keyHit = Library.ToggleKey ~= nil and input.KeyCode == Library.ToggleKey
+	local mouseHit = Library.ToggleInput ~= nil and input.UserInputType == Library.ToggleInput
+	if keyHit and gpe and UserInputService:GetFocusedTextBox() then keyHit = false end
+	if mouseHit and gpe then mouseHit = false end
+
+	if keyHit or mouseHit then
 		Library:ToggleUI()
 	end
 end))
+
 
 function Library:Destroy()
 	if self.WatermarkApi then pcall(function() self.WatermarkApi:Destroy() end) end
