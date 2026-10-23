@@ -8,7 +8,7 @@ return function(Library)
 
 	local SaveManager = {}
 	SaveManager.Library = Library
-	SaveManager.Folder = "Facility"
+	SaveManager.Folder = "synax"
 	SaveManager.Ignore = {}
 	SaveManager.Format = "json"
 
