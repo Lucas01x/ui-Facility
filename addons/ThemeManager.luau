@@ -6,7 +6,7 @@ return function(Library)
 
 	local ThemeManager = {}
 	ThemeManager.Library = Library
-	ThemeManager.Folder = "Facility"
+	ThemeManager.Folder = "synax"
 	ThemeManager.Flags = { "theme_preset", "theme_accent" }
 	ThemeManager.AutoSave = false
 	ThemeManager.Current = "main"
