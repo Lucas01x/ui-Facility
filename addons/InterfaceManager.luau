@@ -4,7 +4,7 @@
 return function(Library)
 	local InterfaceManager = {}
 	InterfaceManager.Library = Library
-	InterfaceManager.Folder = "Facility"
+	InterfaceManager.Folder = "synax"
 	InterfaceManager.Flags = { "interface_menu_key", "interface_scale", "interface_hotkeys" }
 
 	function InterfaceManager:SetLibrary(lib)
