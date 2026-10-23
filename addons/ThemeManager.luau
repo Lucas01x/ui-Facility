@@ -46,7 +46,7 @@ return function(Library)
 
 	ThemeManager.Presets = {
 		main   = { Bg = Color3.fromRGB(26, 26, 28),    Accent = Color3.fromRGB(223, 223, 223) },
-		darker     = { Bg = Color3.fromRGB(16, 16, 16),    Accent = Color3.fromRGB(72, 138, 182) },
+		darker     = { Bg = Color3.fromRGB(16, 16, 16),    Accent = Color3.fromRGB(223, 223, 223) },
 		typewriter = { Bg = Color3.fromRGB(34, 34, 34),    Accent = Color3.fromRGB(109, 180, 120) },
 		aqua       = { Bg = Color3.fromRGB(14, 22, 22),    Accent = Color3.fromRGB(60, 165, 165) },
 		amethyst   = { Bg = Color3.fromRGB(18, 4, 32),     Accent = Color3.fromRGB(177, 51, 255) },
